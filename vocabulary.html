@@ -1,0 +1,909 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>German Study Platform</title>
+    <style>
+        :root {
+            --bg-primary: #121212;
+            --bg-secondary: #1e1e1e;
+            --bg-tertiary: #2d2d2d;
+            --text-primary: #e0e0e0;
+            --text-secondary: #a0a0a0;
+            --accent: #4a9cff;
+            --border: #333;
+            --success: #4caf50;
+            --warning: #ff9800;
+            --error: #f44336;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            font-size: 2rem;
+            color: var(--accent);
+        }
+
+        nav {
+            display: flex;
+            gap: 15px;
+        }
+
+        .nav-btn {
+            background-color: var(--bg-secondary);
+            color: var(--text-primary);
+            border: 1px solid var(--border);
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .nav-btn:hover, .nav-btn.active {
+            background-color: var(--accent);
+            color: var(--bg-primary);
+        }
+
+        .section {
+            display: none;
+            background-color: var(--bg-secondary);
+            border-radius: 8px;
+            padding: 25px;
+            margin-bottom: 30px;
+            border: 1px solid var(--border);
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        h2 {
+            margin-bottom: 20px;
+            color: var(--accent);
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 10px;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-with-button {
+            display: flex;
+            gap: 10px;
+            align-items: flex-end;
+        }
+
+        .input-with-button .input-group {
+            flex: 1;
+            margin-bottom: 0;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--text-secondary);
+        }
+
+        input, textarea, select {
+            width: 100%;
+            padding: 12px;
+            background-color: var(--bg-tertiary);
+            border: 1px solid var(--border);
+            border-radius: 5px;
+            color: var(--text-primary);
+            font-size: 1rem;
+        }
+
+        textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .btn {
+            background-color: var(--accent);
+            color: var(--bg-primary);
+            border: none;
+            padding: 12px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+            margin-right: 10px;
+            margin-bottom: 10px;
+            height: fit-content;
+        }
+
+        .btn:hover {
+            background-color: #3a7bd5;
+        }
+
+        .btn-secondary {
+            background-color: var(--bg-tertiary);
+            color: var(--text-primary);
+        }
+
+        .btn-secondary:hover {
+            background-color: #3a3a3a;
+        }
+
+        .card {
+            background-color: var(--bg-tertiary);
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 1px solid var(--border);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .card-title {
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+
+        .card-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .flashcard {
+            perspective: 1000px;
+            height: 200px;
+            margin: 20px 0;
+        }
+
+        .flashcard-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+        }
+
+        .flashcard.flipped .flashcard-inner {
+            transform: rotateY(180deg);
+        }
+
+        .flashcard-front, .flashcard-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            border-radius: 8px;
+            background-color: var(--bg-tertiary);
+            border: 1px solid var(--border);
+        }
+
+        .flashcard-back {
+            transform: rotateY(180deg);
+        }
+
+        .section-selector {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .section-btn {
+            background-color: var(--bg-tertiary);
+            color: var(--text-primary);
+            border: 1px solid var(--border);
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .section-btn.active {
+            background-color: var(--accent);
+            color: var(--bg-primary);
+        }
+
+        .topic-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .topic-item {
+            background-color: var(--bg-tertiary);
+            border-radius: 8px;
+            padding: 15px;
+            border: 1px solid var(--border);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .topic-item:hover {
+            border-color: var(--accent);
+        }
+
+        .topic-item.active {
+            border-color: var(--accent);
+            background-color: rgba(74, 156, 255, 0.1);
+        }
+
+        .practice-area {
+            margin-top: 20px;
+        }
+
+        .writing-editor {
+            min-height: 300px;
+            background-color: var(--bg-tertiary);
+            border: 1px solid var(--border);
+            border-radius: 5px;
+            padding: 15px;
+            margin-bottom: 15px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+
+        .writing-editor:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+
+        .level-selector {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .level-btn {
+            background-color: var(--bg-tertiary);
+            color: var(--text-primary);
+            border: 1px solid var(--border);
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .level-btn.active {
+            background-color: var(--accent);
+            color: var(--bg-primary);
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .success-message {
+            color: var(--success);
+            margin-top: 10px;
+        }
+
+        .error-message {
+            color: var(--error);
+            margin-top: 10px;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            
+            header {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            nav {
+                width: 100%;
+                justify-content: space-between;
+            }
+            
+            .nav-btn {
+                flex: 1;
+                text-align: center;
+            }
+            
+            .section-selector, .level-selector {
+                justify-content: center;
+            }
+            
+            .input-with-button {
+                flex-direction: column;
+            }
+            
+            .input-with-button .btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>German Study Platform</h1>
+            <nav>
+                <button class="nav-btn active" data-section="vocabulary">Vocabulary</button>
+                <button class="nav-btn" data-section="writing">Writing Practice</button>
+            </nav>
+        </header>
+
+        <!-- Vocabulary Section -->
+        <section id="vocabulary" class="section active">
+            <h2>Vocabulary Flashcards</h2>
+            
+            <div class="section-selector" id="section-selector">
+                <!-- Sections will be dynamically added here -->
+            </div>
+            
+            <div class="input-with-button">
+                <div class="input-group">
+                    <label for="section-name">Section Name</label>
+                    <input type="text" id="section-name" placeholder="Enter section name">
+                </div>
+                <button class="btn" id="add-section">Add Section</button>
+            </div>
+            
+            <div class="input-group">
+                <label for="german-sentence">German Sentence/Word</label>
+                <input type="text" id="german-sentence" placeholder="Enter German sentence or word">
+            </div>
+            
+            <div class="input-group">
+                <label for="english-meaning">English Meaning</label>
+                <input type="text" id="english-meaning" placeholder="Enter English meaning">
+            </div>
+            
+            <button class="btn" id="add-card">Add Card</button>
+            <button class="btn btn-secondary" id="export-cards">Export to Anki</button>
+            <button class="btn btn-secondary" id="import-cards">Import from Anki</button>
+            <input type="file" id="file-input" class="hidden" accept=".apkg">
+            
+            <div class="flashcard-container">
+                <h3>Your Flashcards</h3>
+                <div id="flashcards-list"></div>
+            </div>
+            
+            <div class="study-mode">
+                <h3>Study Mode</h3>
+                <div class="flashcard" id="study-flashcard">
+                    <div class="flashcard-inner">
+                        <div class="flashcard-front">
+                            <p id="card-front-text">Click "Start Studying" to begin</p>
+                        </div>
+                        <div class="flashcard-back">
+                            <p id="card-back-text">Back of card will appear here</p>
+                        </div>
+                    </div>
+                </div>
+                <button class="btn" id="start-studying">Start Studying</button>
+                <button class="btn btn-secondary" id="flip-card">Flip Card</button>
+                <button class="btn btn-secondary" id="next-card">Next Card</button>
+            </div>
+        </section>
+
+        <!-- Writing Practice Section -->
+        <section id="writing" class="section">
+            <h2>Writing Practice</h2>
+            
+            <div class="level-selector" id="level-selector">
+                <button class="level-btn active" data-level="A1">A1</button>
+                <button class="level-btn" data-level="A2">A2</button>
+                <button class="level-btn" data-level="B1">B1</button>
+                <button class="level-btn" data-level="B2">B2</button>
+                <button class="level-btn" data-level="C1">C1</button>
+                <button class="level-btn" data-level="C2">C2</button>
+            </div>
+            
+            <div class="input-with-button">
+                <div class="input-group">
+                    <label for="topic-name">Topic Name</label>
+                    <input type="text" id="topic-name" placeholder="Enter a topic to practice">
+                </div>
+                <button class="btn" id="add-topic">Add Topic</button>
+            </div>
+            
+            <div class="topic-list" id="topics-list">
+                <!-- Topics will be dynamically added here -->
+            </div>
+            
+            <div class="practice-area hidden" id="writing-practice">
+                <h3 id="current-topic">Topic: </h3>
+                <div class="input-group">
+                    <label for="writing-text">Write about this topic in German</label>
+                    <div class="writing-editor" id="writing-editor" contenteditable="true"></div>
+                </div>
+                <button class="btn" id="save-writing">Save Writing</button>
+                <button class="btn btn-secondary" id="clear-writing">Clear</button>
+                
+                <div class="saved-writings">
+                    <h4>Previous Writings</h4>
+                    <div id="writings-list"></div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        // Navigation
+        document.querySelectorAll('.nav-btn').forEach(button => {
+            button.addEventListener('click', () => {
+                // Remove active class from all buttons and sections
+                document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+                document.querySelectorAll('.section').forEach(section => section.classList.remove('active'));
+                
+                // Add active class to clicked button and corresponding section
+                button.classList.add('active');
+                const sectionId = button.getAttribute('data-section');
+                document.getElementById(sectionId).classList.add('active');
+            });
+        });
+
+        // Vocabulary Section
+        let sections = JSON.parse(localStorage.getItem('sections')) || {};
+        let currentSection = "";
+        let currentCardIndex = 0;
+        const studyFlashcard = document.getElementById('study-flashcard');
+
+        function renderSections() {
+            const sectionSelector = document.getElementById('section-selector');
+            sectionSelector.innerHTML = '';
+            
+            Object.keys(sections).forEach(sectionName => {
+                const sectionBtn = document.createElement('button');
+                sectionBtn.className = 'section-btn';
+                sectionBtn.textContent = sectionName;
+                if (sectionName === currentSection) {
+                    sectionBtn.classList.add('active');
+                }
+                sectionBtn.addEventListener('click', () => {
+                    document.querySelectorAll('.section-btn').forEach(btn => btn.classList.remove('active'));
+                    sectionBtn.classList.add('active');
+                    currentSection = sectionName;
+                    renderFlashcards();
+                });
+                sectionSelector.appendChild(sectionBtn);
+            });
+            
+            // If no sections exist yet, create an empty state
+            if (Object.keys(sections).length === 0) {
+                sectionSelector.innerHTML = '<p>No sections created yet. Add your first section above.</p>';
+            }
+        }
+
+        function addSection() {
+            const sectionInput = document.getElementById('section-name');
+            const sectionName = sectionInput.value.trim();
+            
+            if (sectionName) {
+                if (!sections[sectionName]) {
+                    sections[sectionName] = [];
+                    localStorage.setItem('sections', JSON.stringify(sections));
+                    renderSections();
+                    sectionInput.value = '';
+                    showMessage('Section added successfully!', 'success');
+                    
+                    // Set as current section if it's the first one
+                    if (Object.keys(sections).length === 1) {
+                        currentSection = sectionName;
+                        document.querySelector('.section-btn').classList.add('active');
+                    }
+                } else {
+                    showMessage('Section already exists.', 'error');
+                }
+            } else {
+                showMessage('Please enter a section name.', 'error');
+            }
+        }
+
+        function renderFlashcards() {
+            const flashcardsList = document.getElementById('flashcards-list');
+            flashcardsList.innerHTML = '';
+            
+            if (sections[currentSection] && sections[currentSection].length > 0) {
+                sections[currentSection].forEach((card, index) => {
+                    const cardElement = document.createElement('div');
+                    cardElement.className = 'card';
+                    cardElement.innerHTML = `
+                        <div class="card-header">
+                            <div class="card-title">${card.german}</div>
+                            <div class="card-actions">
+                                <button class="btn btn-secondary edit-card" data-index="${index}">Edit</button>
+                                <button class="btn btn-secondary delete-card" data-index="${index}">Delete</button>
+                            </div>
+                        </div>
+                        <div class="card-content">
+                            <p><strong>Meaning:</strong> ${card.english}</p>
+                        </div>
+                    `;
+                    flashcardsList.appendChild(cardElement);
+                });
+                
+                // Add event listeners for edit and delete buttons
+                document.querySelectorAll('.edit-card').forEach(button => {
+                    button.addEventListener('click', (e) => {
+                        const index = e.target.getAttribute('data-index');
+                        editCard(index);
+                    });
+                });
+                
+                document.querySelectorAll('.delete-card').forEach(button => {
+                    button.addEventListener('click', (e) => {
+                        const index = e.target.getAttribute('data-index');
+                        deleteCard(index);
+                    });
+                });
+            } else {
+                flashcardsList.innerHTML = '<p>No flashcards in this section yet.</p>';
+            }
+        }
+
+        function addCard() {
+            if (!currentSection) {
+                showMessage('Please select or create a section first.', 'error');
+                return;
+            }
+            
+            const germanInput = document.getElementById('german-sentence');
+            const englishInput = document.getElementById('english-meaning');
+            
+            const german = germanInput.value.trim();
+            const english = englishInput.value.trim();
+            
+            if (german && english) {
+                sections[currentSection].push({ german, english });
+                localStorage.setItem('sections', JSON.stringify(sections));
+                renderFlashcards();
+                
+                germanInput.value = '';
+                englishInput.value = '';
+                
+                showMessage('Card added successfully!', 'success');
+            } else {
+                showMessage('Please fill in both fields.', 'error');
+            }
+        }
+
+        function editCard(index) {
+            const card = sections[currentSection][index];
+            const newGerman = prompt('Edit German sentence/word:', card.german);
+            const newEnglish = prompt('Edit English meaning:', card.english);
+            
+            if (newGerman !== null && newEnglish !== null) {
+                sections[currentSection][index] = { german: newGerman, english: newEnglish };
+                localStorage.setItem('sections', JSON.stringify(sections));
+                renderFlashcards();
+                showMessage('Card updated successfully!', 'success');
+            }
+        }
+
+        function deleteCard(index) {
+            if (confirm('Are you sure you want to delete this card?')) {
+                sections[currentSection].splice(index, 1);
+                localStorage.setItem('sections', JSON.stringify(sections));
+                renderFlashcards();
+                showMessage('Card deleted successfully!', 'success');
+            }
+        }
+
+        function startStudying() {
+            if (!currentSection || !sections[currentSection] || sections[currentSection].length === 0) {
+                showMessage('No flashcards to study. Add some first!', 'error');
+                return;
+            }
+            
+            currentCardIndex = 0;
+            showCard();
+            document.getElementById('start-studying').textContent = 'Restart Studying';
+        }
+
+        function showCard() {
+            if (!sections[currentSection] || sections[currentSection].length === 0) return;
+            
+            const card = sections[currentSection][currentCardIndex];
+            document.getElementById('card-front-text').textContent = card.german;
+            document.getElementById('card-back-text').textContent = card.english;
+            studyFlashcard.classList.remove('flipped');
+        }
+
+        function flipCard() {
+            studyFlashcard.classList.toggle('flipped');
+        }
+
+        function nextCard() {
+            if (!sections[currentSection] || sections[currentSection].length === 0) return;
+            
+            currentCardIndex = (currentCardIndex + 1) % sections[currentSection].length;
+            showCard();
+        }
+
+        function exportCards() {
+            if (Object.keys(sections).length === 0) {
+                showMessage('No cards to export.', 'error');
+                return;
+            }
+            
+            // In a real implementation, this would create an actual .apkg file
+            // For this demo, we'll just simulate the export
+            const dataStr = JSON.stringify(sections, null, 2);
+            const dataBlob = new Blob([dataStr], {type: 'application/json'});
+            
+            // Create a download link
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(dataBlob);
+            link.download = 'german-vocabulary.apkg';
+            link.click();
+            
+            showMessage('Cards exported successfully!', 'success');
+        }
+
+        function importCards() {
+            document.getElementById('file-input').click();
+        }
+
+        function handleFileImport(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                try {
+                    const importedSections = JSON.parse(event.target.result);
+                    if (typeof importedSections === 'object') {
+                        sections = importedSections;
+                        localStorage.setItem('sections', JSON.stringify(sections));
+                        renderSections();
+                        renderFlashcards();
+                        showMessage('Cards imported successfully!', 'success');
+                    } else {
+                        showMessage('Invalid file format.', 'error');
+                    }
+                } catch (error) {
+                    showMessage('Error reading file.', 'error');
+                }
+            };
+            reader.readAsText(file);
+            
+            // Reset the input
+            e.target.value = '';
+        }
+
+        // Writing Practice Section
+        let currentLevel = "A1";
+        let topics = JSON.parse(localStorage.getItem('writingTopics')) || {};
+        let currentTopic = null;
+        let writings = JSON.parse(localStorage.getItem('writings')) || {};
+
+        // Initialize empty topics structure for each level
+        const levels = ["A1", "A2", "B1", "B2", "C1", "C2"];
+        levels.forEach(level => {
+            if (!topics[level]) {
+                topics[level] = [];
+            }
+        });
+        localStorage.setItem('writingTopics', JSON.stringify(topics));
+
+        // Level selector
+        document.querySelectorAll('.level-btn').forEach(button => {
+            button.addEventListener('click', () => {
+                document.querySelectorAll('.level-btn').forEach(btn => btn.classList.remove('active'));
+                button.classList.add('active');
+                currentLevel = button.getAttribute('data-level');
+                renderTopics();
+            });
+        });
+
+        function renderTopics() {
+            const topicsList = document.getElementById('topics-list');
+            topicsList.innerHTML = '';
+            
+            if (topics[currentLevel] && topics[currentLevel].length > 0) {
+                topics[currentLevel].forEach((topic, index) => {
+                    const topicElement = document.createElement('div');
+                    topicElement.className = 'topic-item';
+                    topicElement.textContent = topic;
+                    topicElement.addEventListener('click', () => selectTopic(topic, index));
+                    topicsList.appendChild(topicElement);
+                });
+            } else {
+                topicsList.innerHTML = '<p>No topics for this level yet. Add your first topic above.</p>';
+            }
+        }
+
+        function addTopic() {
+            const topicInput = document.getElementById('topic-name');
+            const topic = topicInput.value.trim();
+            
+            if (topic) {
+                if (!topics[currentLevel]) {
+                    topics[currentLevel] = [];
+                }
+                
+                topics[currentLevel].push(topic);
+                localStorage.setItem('writingTopics', JSON.stringify(topics));
+                renderTopics();
+                topicInput.value = '';
+                showMessage('Topic added successfully!', 'success');
+            } else {
+                showMessage('Please enter a topic name.', 'error');
+            }
+        }
+
+        function selectTopic(topic, index) {
+            currentTopic = topic;
+            
+            // Update UI
+            document.querySelectorAll('.topic-item').forEach(item => item.classList.remove('active'));
+            document.querySelectorAll('.topic-item')[index].classList.add('active');
+            
+            document.getElementById('writing-practice').classList.remove('hidden');
+            document.getElementById('current-topic').textContent = `Topic: ${topic} (Level: ${currentLevel})`;
+            
+            // Load previous writings for this topic
+            renderWritings();
+        }
+
+        function saveWriting() {
+            if (!currentTopic) {
+                showMessage('Please select a topic first.', 'error');
+                return;
+            }
+            
+            const writingText = document.getElementById('writing-editor').innerHTML.trim();
+            
+            if (writingText) {
+                const writingKey = `${currentLevel}-${currentTopic}`;
+                
+                if (!writings[writingKey]) {
+                    writings[writingKey] = [];
+                }
+                
+                writings[writingKey].push({
+                    text: writingText,
+                    date: new Date().toLocaleString()
+                });
+                
+                localStorage.setItem('writings', JSON.stringify(writings));
+                renderWritings();
+                document.getElementById('writing-editor').innerHTML = '';
+                showMessage('Writing saved successfully!', 'success');
+            } else {
+                showMessage('Please write something before saving.', 'error');
+            }
+        }
+
+        function renderWritings() {
+            if (!currentTopic) return;
+            
+            const writingsList = document.getElementById('writings-list');
+            writingsList.innerHTML = '';
+            
+            const writingKey = `${currentLevel}-${currentTopic}`;
+            
+            if (writings[writingKey] && writings[writingKey].length > 0) {
+                writings[writingKey].forEach((writing, index) => {
+                    const writingElement = document.createElement('div');
+                    writingElement.className = 'card';
+                    writingElement.innerHTML = `
+                        <div class="card-header">
+                            <div class="card-title">Writing #${index + 1}</div>
+                            <div class="card-actions">
+                                <button class="btn btn-secondary delete-writing" data-index="${index}">Delete</button>
+                            </div>
+                        </div>
+                        <div class="card-content">
+                            <p><strong>Date:</strong> ${writing.date}</p>
+                            <div>${writing.text}</div>
+                        </div>
+                    `;
+                    writingsList.appendChild(writingElement);
+                });
+                
+                // Add event listeners for delete buttons
+                document.querySelectorAll('.delete-writing').forEach(button => {
+                    button.addEventListener('click', (e) => {
+                        const index = e.target.getAttribute('data-index');
+                        deleteWriting(index);
+                    });
+                });
+            } else {
+                writingsList.innerHTML = '<p>No writings saved for this topic yet.</p>';
+            }
+        }
+
+        function deleteWriting(index) {
+            if (confirm('Are you sure you want to delete this writing?')) {
+                const writingKey = `${currentLevel}-${currentTopic}`;
+                writings[writingKey].splice(index, 1);
+                localStorage.setItem('writings', JSON.stringify(writings));
+                renderWritings();
+                showMessage('Writing deleted successfully!', 'success');
+            }
+        }
+
+        function clearWriting() {
+            if (confirm('Are you sure you want to clear your writing?')) {
+                document.getElementById('writing-editor').innerHTML = '';
+            }
+        }
+
+        // Utility Functions
+        function showMessage(message, type) {
+            // Remove any existing messages
+            const existingMessages = document.querySelectorAll('.success-message, .error-message');
+            existingMessages.forEach(msg => msg.remove());
+            
+            // Create new message
+            const messageElement = document.createElement('div');
+            messageElement.className = type === 'success' ? 'success-message' : 'error-message';
+            messageElement.textContent = message;
+            
+            // Add to the current active section
+            const activeSection = document.querySelector('.section.active');
+            activeSection.appendChild(messageElement);
+            
+            // Remove after 3 seconds
+            setTimeout(() => {
+                messageElement.remove();
+            }, 3000);
+        }
+
+        // Event Listeners
+        document.addEventListener('DOMContentLoaded', () => {
+            // Vocabulary
+            document.getElementById('add-section').addEventListener('click', addSection);
+            document.getElementById('add-card').addEventListener('click', addCard);
+            document.getElementById('export-cards').addEventListener('click', exportCards);
+            document.getElementById('import-cards').addEventListener('click', importCards);
+            document.getElementById('file-input').addEventListener('change', handleFileImport);
+            document.getElementById('start-studying').addEventListener('click', startStudying);
+            document.getElementById('flip-card').addEventListener('click', flipCard);
+            document.getElementById('next-card').addEventListener('click', nextCard);
+            
+            // Writing
+            document.getElementById('add-topic').addEventListener('click', addTopic);
+            document.getElementById('save-writing').addEventListener('click', saveWriting);
+            document.getElementById('clear-writing').addEventListener('click', clearWriting);
+            
+            // Initialize
+            renderSections();
+            renderFlashcards();
+            renderTopics();
+        });
+    </script>
+</body>
+</html>
