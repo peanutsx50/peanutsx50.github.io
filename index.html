@@ -406,6 +406,183 @@
             font-weight: bold;
             font-size: 0.9em;
         }
+
+        .pomodoro-section {
+            background: #252525;
+            padding: 20px;
+            border-radius: 15px;
+            border: 1px solid #333;
+            margin-bottom: 30px;
+        }
+
+        .pomodoro-section h3 {
+            color: #ffffff;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        .pomodoro-timer {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .timer-display {
+            font-size: 4em;
+            font-weight: bold;
+            color: #4ade80;
+            margin: 20px 0;
+            font-family: 'Courier New', monospace;
+        }
+
+        .timer-controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .timer-btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+            font-size: 1em;
+        }
+
+        .timer-btn.start {
+            background: #4ade80;
+            color: #0a0a0a;
+        }
+
+        .timer-btn.pause {
+            background: #f59e0b;
+            color: #0a0a0a;
+        }
+
+        .timer-btn.reset {
+            background: #ef4444;
+            color: white;
+        }
+
+        .timer-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+
+        .timer-settings {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .timer-setting {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .timer-setting label {
+            color: #888;
+            font-size: 0.9em;
+        }
+
+        .timer-setting input {
+            width: 80px;
+            padding: 8px;
+            border: 1px solid #333;
+            border-radius: 6px;
+            background: #1a1a1a;
+            color: #e0e0e0;
+            text-align: center;
+        }
+
+        .timer-mode {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #e0e0e0;
+            margin-top: 10px;
+        }
+
+        .work-mode {
+            color: #ef4444;
+        }
+
+        .break-mode {
+            color: #4ade80;
+        }
+
+        .youtube-section {
+            background: #252525;
+            padding: 20px;
+            border-radius: 15px;
+            border: 1px solid #333;
+            margin-bottom: 30px;
+        }
+
+        .youtube-section h3 {
+            color: #ffffff;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        .youtube-input-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .youtube-input-group input {
+            flex: 1;
+            padding: 12px;
+            border: 1px solid #333;
+            border-radius: 8px;
+            background: #1a1a1a;
+            color: #e0e0e0;
+        }
+
+        .youtube-input-group input:focus {
+            outline: none;
+            border-color: #4ade80;
+        }
+
+        .youtube-input-group button {
+            padding: 12px 24px;
+            background: #4ade80;
+            color: #0a0a0a;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background 0.3s;
+        }
+
+        .youtube-input-group button:hover {
+            background: #22c55e;
+        }
+
+        .youtube-player {
+            width: 100%;
+            aspect-ratio: 16/9;
+            border-radius: 10px;
+            overflow: hidden;
+            border: 1px solid #333;
+        }
+
+        .youtube-placeholder {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 200px;
+            background: #1a1a1a;
+            border-radius: 10px;
+            color: #666;
+            font-style: italic;
+            border: 1px solid #333;
+        }
     </style>
 </head>
 <body>
@@ -430,6 +607,29 @@
                 <button onclick="setTarget()">Set Target</button>
             </div>
             <div class="target-display" id="targetDisplay"></div>
+        </div>
+
+        <div class="pomodoro-section">
+            <h3>⏱️ Pomodoro Timer</h3>
+            <div class="pomodoro-timer">
+                <div class="timer-display" id="timerDisplay">25:00</div>
+                <div class="timer-controls">
+                    <button class="timer-btn start" onclick="startTimer()">Start</button>
+                    <button class="timer-btn pause" onclick="pauseTimer()">Pause</button>
+                    <button class="timer-btn reset" onclick="resetTimer()">Reset</button>
+                </div>
+                <div class="timer-mode" id="timerMode">Work Session</div>
+                <div class="timer-settings">
+                    <div class="timer-setting">
+                        <label>Work (min)</label>
+                        <input type="number" id="workTime" value="25" min="1" max="60">
+                    </div>
+                    <div class="timer-setting">
+                        <label>Break (min)</label>
+                        <input type="number" id="breakTime" value="5" min="1" max="30">
+                    </div>
+                </div>
+            </div>
         </div>
 
         <div class="stats">
@@ -479,15 +679,30 @@
         </div>
     </div>
 
+    <audio id="timerSound" preload="auto">
+        <source src="https://assets.mixkit.co/sfx/preview/mixkit-alarm-digital-clock-beep-989.mp3" type="audio/mpeg">
+    </audio>
+
     <script>
         let tasks = {};
         let completionHistory = {};
         let targetData = null;
-        let currentDate = new Date();
-        let viewMonth = new Date();
+        let currentDate = new Date(new Date().toDateString());
+        let viewMonth = new Date(new Date().toDateString());
+
+        let timerInterval;
+        let timerTimeLeft = 25 * 60;
+        let timerIsRunning = false;
+        let isWorkSession = true;
+        let workDuration = 25 * 60;
+        let breakDuration = 5 * 60;
 
         function getTodayKey() {
-            return currentDate.toISOString().split('T')[0];
+            const date = new Date();
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
         }
 
         function loadData() {
@@ -685,7 +900,11 @@
             
             for (let day = 1; day <= daysInMonth; day++) {
                 const date = new Date(year, month, day);
-                const dateKey = date.toISOString().split('T')[0];
+                const dateYear = date.getFullYear();
+                const dateMonth = String(date.getMonth() + 1).padStart(2, '0');
+                const dateDay = String(date.getDate()).padStart(2, '0');
+                const dateKey = `${dateYear}-${dateMonth}-${dateDay}`;
+                
                 const dayDiv = document.createElement('div');
                 dayDiv.className = 'calendar-day';
                 
@@ -754,12 +973,14 @@
                 return;
             }
 
-            // Calculate current streak
             let streak = 0;
             let checkDate = new Date(currentDate);
             
             while (true) {
-                const dateKey = checkDate.toISOString().split('T')[0];
+                const year = checkDate.getFullYear();
+                const month = String(checkDate.getMonth() + 1).padStart(2, '0');
+                const day = String(checkDate.getDate()).padStart(2, '0');
+                const dateKey = `${year}-${month}-${day}`;
                 const dayHistory = completionHistory[dateKey];
                 
                 if (dayHistory) {
@@ -775,7 +996,6 @@
                 }
             }
             
-            // Calculate longest streak
             let longestStreak = 0;
             let currentStreak = 0;
             const sortedDates = Object.keys(completionHistory).sort();
@@ -793,7 +1013,6 @@
                 }
             }
             
-            // Calculate total completed days
             let completedDays = 0;
             Object.keys(completionHistory).forEach(dateKey => {
                 const dayHistory = completionHistory[dateKey];
@@ -874,17 +1093,102 @@
             event.target.value = '';
         }
 
-        // Initialize
-        loadData();
-        renderTasks();
-        renderCalendar();
-        updateStats();
-        updateTargetDisplay();
+        function formatTime(seconds) {
+            const mins = Math.floor(seconds / 60);
+            const secs = seconds % 60;
+            return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+        }
 
-        document.getElementById('taskInput').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                addTask();
+        function updateTimerDisplay() {
+            document.getElementById('timerDisplay').textContent = formatTime(timerTimeLeft);
+        }
+
+        function updateTimerMode() {
+            const modeElement = document.getElementById('timerMode');
+            if (isWorkSession) {
+                modeElement.textContent = 'Work Session';
+                modeElement.className = 'timer-mode work-mode';
+            } else {
+                modeElement.textContent = 'Break Time';
+                modeElement.className = 'timer-mode break-mode';
             }
+        }
+
+        function startTimer() {
+            if (timerIsRunning) return;
+            
+            workDuration = parseInt(document.getElementById('workTime').value) * 60;
+            breakDuration = parseInt(document.getElementById('breakTime').value) * 60;
+            
+            if (timerTimeLeft === 0) {
+                timerTimeLeft = isWorkSession ? workDuration : breakDuration;
+                updateTimerDisplay();
+            }
+            
+            timerIsRunning = true;
+            timerInterval = setInterval(() => {
+                timerTimeLeft--;
+                updateTimerDisplay();
+                
+                if (timerTimeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    timerIsRunning = false;
+                    
+                    const sound = document.getElementById('timerSound');
+                    sound.play().catch(e => console.log('Audio play failed:', e));
+                    
+                    isWorkSession = !isWorkSession;
+                    timerTimeLeft = isWorkSession ? workDuration : breakDuration;
+                    updateTimerDisplay();
+                    updateTimerMode();
+                    
+                    if (isWorkSession) {
+                        alert('Break time is over! Time to get back to work. 💪');
+                    } else {
+                        alert('Work session complete! Time for a break. ☕');
+                    }
+                }
+            }, 1000);
+        }
+
+        function pauseTimer() {
+            if (timerIsRunning) {
+                clearInterval(timerInterval);
+                timerIsRunning = false;
+            }
+        }
+
+        function resetTimer() {
+            clearInterval(timerInterval);
+            timerIsRunning = false;
+            isWorkSession = true;
+            workDuration = parseInt(document.getElementById('workTime').value) * 60;
+            breakDuration = parseInt(document.getElementById('breakTime').value) * 60;
+            timerTimeLeft = workDuration;
+            updateTimerDisplay();
+            updateTimerMode();
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            loadData();
+            renderTasks();
+            renderCalendar();
+            updateStats();
+            updateTargetDisplay();
+            updateTimerDisplay();
+            updateTimerMode();
+            
+            const defaultDate = new Date();
+            defaultDate.setMonth(defaultDate.getMonth() + 6);
+            document.getElementById('targetDate').value = defaultDate.toISOString().split('T')[0];
+            
+            document.getElementById('taskInput').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') addTask();
+            });
+            
+            document.getElementById('youtubeUrl').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') loadYouTubeVideo();
+            });
         });
     </script>
 </body>
